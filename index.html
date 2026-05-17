@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kinda — AI that learns how you work</title>
+  <meta name="description" content="Kinda is an AI productivity app that learns how you work and helps you actually do the things you keep putting off. Join the waitlist." />
+  <script>document.documentElement.classList.add('js')</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Nunito:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">Kinda</a>
+      <div class="nav-links">
+        <a href="#features" class="nav-link scroll-to" data-target="features">Features</a>
+        <a href="#how" class="nav-link scroll-to" data-target="how">How it works</a>
+      </div>
+      <a href="#waitlist" class="btn-nav scroll-to" data-target="waitlist">Join the waitlist</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero" id="hero">
+    <div class="hero-inner">
+      <h1 class="hero-headline">
+        Stop putting it off.<br>Start it now.
+      </h1>
+      <p class="hero-sub">
+        Tell Kinda what you've been avoiding. It learns how you work,<br>
+        breaks it down, and keeps you moving.
+      </p>
+      <a href="#waitlist" class="btn-hero scroll-to" data-target="waitlist">
+        Join the waitlist →
+      </a>
+      <p class="hero-note">Early access — limited spots</p>
+    </div>
+  </section>
+
+  <!-- FEATURE 1 -->
+  <section class="feature" id="features">
+    <div class="feature-inner">
+      <div class="feature-copy" data-anime="fade-up">
+        <h2 class="feature-headline">Just tell it.<br>We'll break it down.</h2>
+        <p class="feature-body">Say whatever's been on your mind. Kinda pulls out the real task and turns it into one clear first step — no categories, no setup required.</p>
+      </div>
+      <div class="feature-device-col">
+        <div class="device-wrap" data-anime="fade-device" data-anime-delay="120">
+          <div class="device-frame">
+            <div class="device-notch"></div>
+            <div class="device-screen">
+              <div class="app-statusbar">
+                <span class="app-time">9:41</span>
+                <span class="app-signals">●●●</span>
+              </div>
+              <div class="app-body">
+                <div class="app-header">
+                  <span class="app-title">Kinda</span>
+                  <span class="app-dot"></span>
+                </div>
+                <div class="app-chat">
+                  <div class="chat-msg chat-msg--user">I need to finish the project proposal but I don't know where to start</div>
+                  <div class="chat-msg chat-msg--ai">Got it. Let's make this easy.</div>
+                  <div class="chat-task">
+                    <span class="chat-task-label">First step</span>
+                    <span class="chat-task-text">Write the executive summary — 150 words only</span>
+                  </div>
+                  <div class="chat-msg chat-msg--user">That feels doable</div>
+                  <div class="chat-msg chat-msg--ai">Good. I'll check in with you in 20 min.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURE 2 -->
+  <section class="feature" id="how">
+    <div class="feature-inner">
+      <div class="feature-copy" data-anime="fade-up">
+        <h2 class="feature-headline">Stay out of<br>your own way.</h2>
+        <p class="feature-body">No endless lists. No constant check-ins. Just the day you set for yourself, structured and clear.</p>
+      </div>
+      <div class="feature-device-col">
+        <div class="device-wrap" data-anime="fade-device" data-anime-delay="120">
+          <div class="device-frame">
+            <div class="device-notch"></div>
+            <div class="device-screen">
+              <div class="app-statusbar">
+                <span class="app-time">9:41</span>
+                <span class="app-signals">●●●</span>
+              </div>
+              <div class="app-body">
+                <div class="app-header app-header--date">
+                  <span class="app-title">Today</span>
+                  <span class="app-date">Mon · 19 May</span>
+                </div>
+                <div class="app-tasks">
+                  <div class="task-row task-row--done">
+                    <span class="task-check">✓</span>
+                    <span class="task-name">Executive summary</span>
+                    <span class="task-tag tag--work">Work</span>
+                  </div>
+                  <div class="task-row">
+                    <span class="task-check task-check--empty"></span>
+                    <span class="task-name">Prepare slides</span>
+                    <span class="task-tag tag--work">Work</span>
+                  </div>
+                  <div class="task-row">
+                    <span class="task-check task-check--empty"></span>
+                    <span class="task-name">Call Jordan</span>
+                    <span class="task-tag tag--personal">Personal</span>
+                  </div>
+                  <div class="task-row task-row--dim">
+                    <span class="task-check task-check--empty"></span>
+                    <span class="task-name">Evening wrap-up</span>
+                    <span class="task-tag tag--time">21:00</span>
+                  </div>
+                </div>
+                <div class="app-tabbar">
+                  <span class="app-tab">◯</span>
+                  <span class="app-tab app-tab--active">☺</span>
+                  <span class="app-tab">＋</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURE CARDS CAROUSEL -->
+  <section class="cards-section">
+    <div class="cards-viewport" data-anime="fade-up">
+      <div class="cards-track" id="cards-track">
+
+        <div class="feat-card feat-card--warm">
+          <h3 class="feat-card-title">Just open<br>and talk</h3>
+          <p class="feat-card-body">Tell Kinda what's on your mind. It transcribes, finds the tasks, and writes them up — so you don't have to.</p>
+        </div>
+
+        <div class="feat-card feat-card--white">
+          <div class="feat-card-copy">
+            <h3 class="feat-card-title feat-card-title--dark">Structure<br>in seconds</h3>
+            <p class="feat-card-body feat-card-body--dark">Kinda reads what you said, finds the real tasks, and builds your day in less time than it takes to find your to-do app.</p>
+          </div>
+          <div class="feat-card-device">
+            <div class="device-frame device-frame--mini">
+              <div class="device-screen device-screen--mini">
+                <div class="app-body app-body--mini">
+                  <div class="app-header">
+                    <span class="app-title">Today</span>
+                  </div>
+                  <div class="app-tasks">
+                    <div class="task-row task-row--done">
+                      <span class="task-check">✓</span>
+                      <span class="task-name">Morning brief</span>
+                    </div>
+                    <div class="task-row">
+                      <span class="task-check task-check--empty"></span>
+                      <span class="task-name">Write proposal</span>
+                      <span class="task-tag tag--work">Work</span>
+                    </div>
+                    <div class="task-row">
+                      <span class="task-check task-check--empty"></span>
+                      <span class="task-name">Call Jordan</span>
+                      <span class="task-tag tag--personal">Personal</span>
+                    </div>
+                    <div class="task-row task-row--dim">
+                      <span class="task-check task-check--empty"></span>
+                      <span class="task-name">Evening wrap-up</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="feat-card feat-card--cool">
+          <h3 class="feat-card-title">It notices what<br>you don't say.</h3>
+          <p class="feat-card-body">When you pause, when you push through, when you stop — Kinda reads the signals and adjusts. No check-ins needed.</p>
+        </div>
+
+        <div class="feat-card feat-card--white">
+          <div class="feat-card-copy">
+            <h3 class="feat-card-title feat-card-title--dark">Three questions.<br>Already knows you.</h3>
+            <p class="feat-card-body feat-card-body--dark">A short setup, then a day built specifically for how your brain works. Not a generic checklist anyone could have made.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="cards-controls">
+      <button class="cards-btn" id="cards-prev" aria-label="Previous">←</button>
+      <button class="cards-btn" id="cards-next" aria-label="Next">→</button>
+    </div>
+  </section>
+
+  <!-- WAITLIST -->
+  <section class="waitlist" id="waitlist">
+    <div class="waitlist-inner">
+      <p class="waitlist-eyebrow" data-anime="fade-up" data-anime-delay="0">Early Access</p>
+      <h2 class="waitlist-headline" data-anime="fade-up" data-anime-delay="80">Be one of the first.</h2>
+      <p class="waitlist-sub" data-anime="fade-up" data-anime-delay="160">
+        Join the waitlist and we'll reach out when your spot is ready.
+      </p>
+
+      <div class="waitlist-form-wrap" id="form-wrap" data-anime="fade-up" data-anime-delay="240">
+        <form name="waitlist" method="POST" data-netlify="true" netlify-honeypot="bot-field" id="waitlist-form" novalidate>
+          <input type="hidden" name="form-name" value="waitlist" />
+          <input type="hidden" name="bot-field" />
+          <div class="field-group">
+            <input type="text" name="name" id="name" placeholder="First name" autocomplete="given-name" aria-label="First name" />
+            <p class="field-error" id="name-error" role="alert" aria-live="polite"></p>
+          </div>
+          <div class="field-group">
+            <input type="email" name="email" id="email" placeholder="Email address" autocomplete="email" aria-label="Email address" />
+            <p class="field-error" id="email-error" role="alert" aria-live="polite"></p>
+          </div>
+          <button type="submit" class="btn-waitlist-submit" id="submit-btn">
+            <span class="btn-label">Join the waitlist →</span>
+            <span class="btn-spinner" aria-hidden="true"></span>
+          </button>
+        </form>
+      </div>
+
+      <div class="waitlist-confirm" id="confirm" aria-live="polite">
+        <p class="confirm-text">You're in. We'll be in touch.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <span class="footer-logo">Kinda</span>
+      <span class="footer-copy">© 2025 Kinda</span>
+      <a href="#" class="footer-link">Privacy</a>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
