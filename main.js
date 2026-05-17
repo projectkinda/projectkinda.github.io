@@ -148,14 +148,42 @@ function initCardsCarousel() {
     return card ? card.offsetWidth + 16 : 536;
   };
 
-  nextBtn.addEventListener('click', () => viewport.scrollBy({ left:  stepWidth(), behavior: 'smooth' }));
-  prevBtn.addEventListener('click', () => viewport.scrollBy({ left: -stepWidth(), behavior: 'smooth' }));
+  nextBtn.addEventListener('click', () => { advance(); resetTimer(); });
+  prevBtn.addEventListener('click', () => { retreat(); resetTimer(); });
+
+  // Auto-loop
+  const INTERVAL = 3200;
+  let timer = null;
+
+  const advance = () => {
+    const maxScroll = viewport.scrollWidth - viewport.clientWidth;
+    if (viewport.scrollLeft >= maxScroll - 8) {
+      // reached end — snap back to start
+      viewport.scrollTo({ left: 0, behavior: 'smooth' });
+    } else {
+      viewport.scrollBy({ left: stepWidth(), behavior: 'smooth' });
+    }
+  };
+
+  const retreat = () => viewport.scrollBy({ left: -stepWidth(), behavior: 'smooth' });
+
+  const startTimer = () => { timer = setInterval(advance, INTERVAL); };
+  const stopTimer  = () => { clearInterval(timer); timer = null; };
+  const resetTimer = () => { stopTimer(); startTimer(); };
+
+  startTimer();
+
+  // Pause on hover / touch
+  viewport.addEventListener('mouseenter',  stopTimer);
+  viewport.addEventListener('mouseleave',  startTimer);
+  viewport.addEventListener('touchstart',  stopTimer,  { passive: true });
+  viewport.addEventListener('touchend',    resetTimer, { passive: true });
 
   // Drag to scroll
   let active = false, startX = 0, startLeft = 0;
-  viewport.addEventListener('mousedown',  e => { active = true; startX = e.pageX - viewport.offsetLeft; startLeft = viewport.scrollLeft; viewport.style.cursor = 'grabbing'; });
+  viewport.addEventListener('mousedown',  e => { active = true; stopTimer(); startX = e.pageX - viewport.offsetLeft; startLeft = viewport.scrollLeft; viewport.style.cursor = 'grabbing'; });
   viewport.addEventListener('mouseleave', () => { active = false; viewport.style.cursor = 'grab'; });
-  viewport.addEventListener('mouseup',    () => { active = false; viewport.style.cursor = 'grab'; });
+  viewport.addEventListener('mouseup',    () => { active = false; viewport.style.cursor = 'grab'; resetTimer(); });
   viewport.addEventListener('mousemove',  e => {
     if (!active) return;
     e.preventDefault();
