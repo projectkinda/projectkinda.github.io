@@ -1102,6 +1102,104 @@ a   { text-decoration: none; }
   .testimonials-track { padding: 0 40px 8px; }
 }
 
+/* ════════════════════════════════════════
+   SOUND FAMILIAR — failure mode cards
+   ════════════════════════════════════════ */
+.sf-intro {
+  max-width: 560px;
+  margin: 0 auto 2.5rem;
+  text-align: center;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: #2C1810;
+  opacity: 0.75;
+}
+
+.sf-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin: 0 auto 2rem;
+  max-width: 900px;
+  padding: 0 24px;
+}
+
+.sf-card {
+  border-radius: 14px;
+  padding: 1.1rem 1.2rem;
+  border: 1px solid transparent;
+}
+
+.sf-card__label {
+  display: block;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.sf-card__quote {
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  margin: 0;
+  font-style: italic;
+  color: #2C1810;
+  opacity: 0.85;
+}
+
+.sf-card--blue   { background: rgba(56, 139, 217, 0.08); border-color: rgba(56, 139, 217, 0.18); }
+.sf-card--blue   .sf-card__label { color: #1a6fb5; }
+.sf-card--amber  { background: rgba(186, 117, 23, 0.08); border-color: rgba(186, 117, 23, 0.18); }
+.sf-card--amber  .sf-card__label { color: #9b5e0a; }
+.sf-card--green  { background: rgba(99, 153, 34, 0.08); border-color: rgba(99, 153, 34, 0.18); }
+.sf-card--green  .sf-card__label { color: #3b6d11; }
+.sf-card--purple { background: rgba(127, 119, 221, 0.08); border-color: rgba(127, 119, 221, 0.20); }
+.sf-card--purple .sf-card__label { color: #534ab7; }
+.sf-card--red    { background: rgba(226, 75, 74, 0.08); border-color: rgba(226, 75, 74, 0.18); }
+.sf-card--red    .sf-card__label { color: #a32d2d; }
+.sf-card--gray   { background: rgba(136, 135, 128, 0.08); border-color: rgba(136, 135, 128, 0.18); }
+.sf-card--gray   .sf-card__label { color: #5f5e5a; }
+
+.sf-bridge {
+  max-width: 560px;
+  margin: 0 auto 3rem;
+  text-align: center;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: #2C1810;
+  opacity: 0.75;
+}
+
+@media (prefers-color-scheme: dark) {
+  .sf-card--blue   { background: rgba(56, 139, 217, 0.12); border-color: rgba(56, 139, 217, 0.25); }
+  .sf-card--blue   .sf-card__label { color: #85b7eb; }
+  .sf-card--amber  { background: rgba(186, 117, 23, 0.12); border-color: rgba(186, 117, 23, 0.25); }
+  .sf-card--amber  .sf-card__label { color: #fac775; }
+  .sf-card--green  { background: rgba(99, 153, 34, 0.12); border-color: rgba(99, 153, 34, 0.25); }
+  .sf-card--green  .sf-card__label { color: #97c459; }
+  .sf-card--purple { background: rgba(127, 119, 221, 0.12); border-color: rgba(127, 119, 221, 0.28); }
+  .sf-card--purple .sf-card__label { color: #afa9ec; }
+  .sf-card--red    { background: rgba(226, 75, 74, 0.12); border-color: rgba(226, 75, 74, 0.25); }
+  .sf-card--red    .sf-card__label { color: #f09595; }
+  .sf-card--gray   { background: rgba(136, 135, 128, 0.12); border-color: rgba(136, 135, 128, 0.25); }
+  .sf-card--gray   .sf-card__label { color: #b4b2a9; }
+}
+
+/* ── Waitlist scarcity line ── */
+.waitlist-scarcity {
+  font-size: 0.8rem;
+  opacity: 0.6;
+  margin: -0.5rem 0 1.25rem;
+  text-align: center;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.85);
+}
+
 @media (max-width: 768px) {
   .nav-inner   { padding: 0 24px; }
   .nav-links   { display: none; }
