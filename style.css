@@ -1117,15 +1117,14 @@ a   { text-decoration: none; }
 .sf-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
-  margin: 0 auto 2.5rem;
-  max-width: 1100px;
-  padding: 0 40px;
+  gap: 22px;
+  margin: 0 0 2.5rem;
+  padding: 0 32px;
 }
 
 .sf-card {
-  border-radius: 24px;
-  padding: 2.2rem 2rem;
+  border-radius: 29px;
+  padding: 2.6rem 2.4rem;
   border: 1px solid rgba(255, 255, 255, 0.14);
   backdrop-filter: blur(32px);
   -webkit-backdrop-filter: blur(32px);
@@ -1151,16 +1150,16 @@ a   { text-decoration: none; }
 .sf-card__label {
   display: block;
   font-family: 'Nunito', sans-serif;
-  font-size: 0.72rem;
+  font-size: 0.86rem;
   font-weight: 700;
   letter-spacing: 0.10em;
   text-transform: uppercase;
-  margin-bottom: 14px;
+  margin-bottom: 17px;
 }
 
 .sf-card__quote {
   font-family: 'Nunito', sans-serif;
-  font-size: 1rem;
+  font-size: 1.2rem;
   line-height: 1.7;
   margin: 0;
   font-style: italic;
