@@ -27,11 +27,13 @@ function splitLetters(el) {
   el.innerHTML = el.innerHTML
     .split(/<br\s*\/?>/i)
     .map(line =>
-      line.trim().split('').map(ch =>
-        ch === ' '
-          ? ' '
-          : `<span class="char-wrap"><span class="char-inner">${ch}</span></span>`
-      ).join('')
+      line.trim().split(' ').map(word =>
+        `<span style="display:inline-block;white-space:nowrap">${
+          word.split('').map(ch =>
+            `<span class="char-wrap"><span class="char-inner">${ch}</span></span>`
+          ).join('')
+        }</span>`
+      ).join(' ')
     )
     .join('<br>');
   return el.querySelectorAll('.char-inner');
