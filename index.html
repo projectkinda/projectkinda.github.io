@@ -2,9 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Kinda — AI that learns how you work</title>
   <meta name="description" content="Kinda is an AI productivity app that learns how you work and helps you actually do the things you keep putting off. Join the waitlist." />
+  <meta name="theme-color" content="#0D2535" />
+  <meta property="og:title" content="Kinda — AI that learns how you work" />
+  <meta property="og:description" content="Most apps treat procrastination like a task problem. Kinda treats it like the psychology problem it actually is." />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
   <script>document.documentElement.classList.add('js')</script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -17,11 +22,19 @@
   <nav class="nav" id="nav">
     <div class="nav-inner">
       <a href="#" class="nav-logo">Kinda</a>
-      <div class="nav-links">
+      <div class="nav-links" id="nav-links">
         <a href="#features" class="nav-link scroll-to" data-target="features">Features</a>
         <a href="#how" class="nav-link scroll-to" data-target="how">How it works</a>
         <a href="#waitlist" class="btn-nav scroll-to" data-target="waitlist">Join the waitlist</a>
       </div>
+      <button class="nav-hamburger" id="nav-hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="nav-mobile">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <div class="nav-mobile" id="nav-mobile" aria-hidden="true">
+      <a href="#features" class="nav-mobile-link scroll-to" data-target="features">Features</a>
+      <a href="#how" class="nav-mobile-link scroll-to" data-target="how">How it works</a>
+      <a href="#waitlist" class="nav-mobile-link scroll-to" data-target="waitlist">Join the waitlist →</a>
     </div>
   </nav>
 
@@ -158,10 +171,10 @@
 
         <div class="how-phone">
           <div class="phone-frame" id="how-phone-frame">
-            <img class="phone-screen" data-moment="0" src="screens/Home with greeting new.png" alt="Kinda home screen" />
-            <img class="phone-screen" data-moment="1" src="screens/Manual Task.png" alt="Add a task" />
-            <img class="phone-screen" data-moment="2" src="screens/AI Suggestion.png" alt="AI task breakdown" />
-            <img class="phone-screen" data-moment="3" src="screens/Subtask End.png" alt="Task complete" />
+            <img class="phone-screen" data-moment="0" src="screens/Home with greeting new.png" alt="Kinda home screen" loading="lazy" />
+            <img class="phone-screen" data-moment="1" src="screens/Manual Task.png" alt="Add a task" loading="lazy" />
+            <img class="phone-screen" data-moment="2" src="screens/AI Suggestion.png" alt="AI task breakdown" loading="lazy" />
+            <img class="phone-screen" data-moment="3" src="screens/Subtask End.png" alt="Task complete" loading="lazy" />
           </div>
         </div>
 

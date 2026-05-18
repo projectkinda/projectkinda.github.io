@@ -80,8 +80,32 @@ function initHeroAnimation() {
     }, '-=380');
 }
 
+// ── Mobile nav hamburger ──────────────────────────────────
+function initMobileNav() {
+  const btn  = document.getElementById('nav-hamburger');
+  const menu = document.getElementById('nav-mobile');
+  if (!btn || !menu) return;
+
+  function close() {
+    btn.classList.remove('open');
+    menu.classList.remove('open');
+    btn.setAttribute('aria-expanded', 'false');
+    menu.setAttribute('aria-hidden', 'true');
+  }
+
+  btn.addEventListener('click', () => {
+    const open = btn.classList.toggle('open');
+    menu.classList.toggle('open', open);
+    btn.setAttribute('aria-expanded', String(open));
+    menu.setAttribute('aria-hidden', String(!open));
+  });
+
+  menu.querySelectorAll('.scroll-to').forEach(el => el.addEventListener('click', close));
+}
+
 // ── Hero cursor glow + chromatic aberration ───────────────
 function initHeroCursorGlow() {
+  if (!window.matchMedia('(pointer: fine)').matches) return;
   const hero     = document.getElementById('hero');
   const canvas   = hero && hero.querySelector('.hero-glow-canvas');
   const headline = document.querySelector('.hero-headline');
@@ -482,6 +506,7 @@ function throttle(fn, ms) {
 // ── Init ──────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   initSmoothScroll();
+  initMobileNav();
   initHeroVideos();
   initHeroAnimation();
   initHeroCursorGlow();
