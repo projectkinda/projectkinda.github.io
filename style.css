@@ -275,11 +275,11 @@ a   { text-decoration: none; }
 .confession-label {
   text-align: center;
   font-family: 'Nunito', sans-serif;
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: #8B7355;
-  margin: 0 0 48px;
+  margin: 0 0 56px;
 }
 
 .ticker-viewport {
@@ -347,18 +347,18 @@ a   { text-decoration: none; }
 
 .anchor-line {
   text-align: center;
-  margin: 52px 0 0;
+  margin: 64px 0 0;
   font-family: 'Bricolage Grotesque', sans-serif;
-  font-size: 20px;
+  font-size: 28px;
   color: #2C1810;
   opacity: 0.35;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
 }
 
 @media (max-width: 768px) {
   .chip { font-size: 13px; padding: 9px 14px; }
   .fade-left, .fade-right { width: 60px; }
-  .anchor-line { font-size: 17px; margin-top: 40px; }
+  .anchor-line { font-size: 22px; margin-top: 48px; }
 }
 
 .app-statusbar {
