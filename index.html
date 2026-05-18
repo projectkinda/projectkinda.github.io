@@ -8,7 +8,7 @@
   <script>document.documentElement.classList.add('js')</script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Nunito:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600&family=Instrument+Serif:ital@0;1&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -20,13 +20,29 @@
       <div class="nav-links">
         <a href="#features" class="nav-link scroll-to" data-target="features">Features</a>
         <a href="#how" class="nav-link scroll-to" data-target="how">How it works</a>
+        <a href="#waitlist" class="btn-nav scroll-to" data-target="waitlist">Join the waitlist</a>
       </div>
-      <a href="#waitlist" class="btn-nav scroll-to" data-target="waitlist">Join the waitlist</a>
     </div>
   </nav>
 
   <!-- HERO -->
   <section class="hero" id="hero">
+
+    <!-- Background video loop -->
+    <div class="hero-video-bg" aria-hidden="true">
+      <video class="hero-vid active" muted playsinline preload="auto">
+        <source src="videos/slow-breeze.mp4" type="video/mp4" />
+      </video>
+      <video class="hero-vid" muted playsinline preload="auto">
+        <source src="videos/character.mp4" type="video/mp4" />
+      </video>
+      <video class="hero-vid" muted playsinline preload="auto">
+        <source src="videos/screens-breeze.mp4" type="video/mp4" />
+      </video>
+    </div>
+
+    <canvas class="hero-glow-canvas" aria-hidden="true"></canvas>
+
     <div class="hero-inner">
       <h1 class="hero-headline">
         Stop putting it off.<br>Start it now.
@@ -42,171 +58,85 @@
     </div>
   </section>
 
-  <!-- FEATURE 1 -->
-  <section class="feature" id="features">
-    <div class="feature-inner">
-      <div class="feature-copy" data-anime="fade-up">
-        <h2 class="feature-headline">Just tell it.<br>We'll break it down.</h2>
-        <p class="feature-body">Say whatever's been on your mind. Kinda pulls out the real task and turns it into one clear first step — no categories, no setup required.</p>
-      </div>
-      <div class="feature-device-col">
-        <div class="device-wrap" data-anime="fade-device" data-anime-delay="120">
-          <div class="device-frame">
-            <div class="device-notch"></div>
-            <div class="device-screen">
-              <div class="app-statusbar">
-                <span class="app-time">9:41</span>
-                <span class="app-signals">●●●</span>
-              </div>
-              <div class="app-body">
-                <div class="app-header">
-                  <span class="app-title">Kinda</span>
-                  <span class="app-dot"></span>
-                </div>
-                <div class="app-chat">
-                  <div class="chat-msg chat-msg--user">I need to finish the project proposal but I don't know where to start</div>
-                  <div class="chat-msg chat-msg--ai">Got it. Let's make this easy.</div>
-                  <div class="chat-task">
-                    <span class="chat-task-label">First step</span>
-                    <span class="chat-task-text">Write the executive summary — 150 words only</span>
-                  </div>
-                  <div class="chat-msg chat-msg--user">That feels doable</div>
-                  <div class="chat-msg chat-msg--ai">Good. I'll check in with you in 20 min.</div>
-                </div>
-              </div>
-            </div>
-          </div>
+  <!-- CONFESSION TICKER -->
+  <section class="confession-section" id="features">
+    <p class="confession-label">Sound familiar?</p>
+
+    <div class="ticker-viewport">
+      <div class="fade-left"></div>
+      <div class="fade-right"></div>
+
+      <div class="ticker-rows">
+        <div class="ticker-overflow">
+          <div class="ticker-track row-1" id="ticker-row-1"></div>
+        </div>
+        <div class="ticker-overflow">
+          <div class="ticker-track row-2" id="ticker-row-2"></div>
+        </div>
+        <div class="ticker-overflow">
+          <div class="ticker-track row-3" id="ticker-row-3"></div>
         </div>
       </div>
     </div>
+
+    <p class="anchor-line">Kinda figures out which one you are.</p>
   </section>
 
-  <!-- FEATURE 2 -->
-  <section class="feature" id="how">
-    <div class="feature-inner">
-      <div class="feature-copy" data-anime="fade-up">
-        <h2 class="feature-headline">Stay out of<br>your own way.</h2>
-        <p class="feature-body">No endless lists. No constant check-ins. Just the day you set for yourself, structured and clear.</p>
-      </div>
-      <div class="feature-device-col">
-        <div class="device-wrap" data-anime="fade-device" data-anime-delay="120">
-          <div class="device-frame">
-            <div class="device-notch"></div>
-            <div class="device-screen">
-              <div class="app-statusbar">
-                <span class="app-time">9:41</span>
-                <span class="app-signals">●●●</span>
-              </div>
-              <div class="app-body">
-                <div class="app-header app-header--date">
-                  <span class="app-title">Today</span>
-                  <span class="app-date">Mon · 19 May</span>
-                </div>
-                <div class="app-tasks">
-                  <div class="task-row task-row--done">
-                    <span class="task-check">✓</span>
-                    <span class="task-name">Executive summary</span>
-                    <span class="task-tag tag--work">Work</span>
-                  </div>
-                  <div class="task-row">
-                    <span class="task-check task-check--empty"></span>
-                    <span class="task-name">Prepare slides</span>
-                    <span class="task-tag tag--work">Work</span>
-                  </div>
-                  <div class="task-row">
-                    <span class="task-check task-check--empty"></span>
-                    <span class="task-name">Call Jordan</span>
-                    <span class="task-tag tag--personal">Personal</span>
-                  </div>
-                  <div class="task-row task-row--dim">
-                    <span class="task-check task-check--empty"></span>
-                    <span class="task-name">Evening wrap-up</span>
-                    <span class="task-tag tag--time">21:00</span>
-                  </div>
-                </div>
-                <div class="app-tabbar">
-                  <span class="app-tab">◯</span>
-                  <span class="app-tab app-tab--active">☺</span>
-                  <span class="app-tab">＋</span>
-                </div>
-              </div>
-            </div>
+  <!-- HOW IT WORKS — Scroll-driven moments -->
+  <section class="how-section" id="how">
+    <div class="how-sticky">
+      <div class="how-layout">
+
+        <div class="how-copy">
+          <div class="moment" data-moment="0">
+            <p class="moment-eyebrow">Step 1</p>
+            <h2 class="moment-headline">Your day,<br>at a glance.</h2>
+            <p class="moment-body">Kinda learns your rhythm and greets you with exactly what matters — no noise, no overwhelm. Just a clear picture of your day.</p>
           </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- FEATURE CARDS CAROUSEL -->
-  <section class="cards-section">
-    <div class="cards-viewport" data-anime="fade-up">
-      <div class="cards-track" id="cards-track">
-
-        <div class="feat-card feat-card--warm">
-          <h3 class="feat-card-title">Just open<br>and talk</h3>
-          <p class="feat-card-body">Tell Kinda what's on your mind. It transcribes, finds the tasks, and writes them up — so you don't have to.</p>
-        </div>
-
-        <div class="feat-card feat-card--white">
-          <div class="feat-card-copy">
-            <h3 class="feat-card-title feat-card-title--dark">Structure<br>in seconds</h3>
-            <p class="feat-card-body feat-card-body--dark">Kinda reads what you said, finds the real tasks, and builds your day in less time than it takes to find your to-do app.</p>
+          <div class="moment" data-moment="1">
+            <p class="moment-eyebrow">Step 2</p>
+            <h2 class="moment-headline">Add it<br>your way.</h2>
+            <p class="moment-body">Voice note, quick type, or paste a link. Kinda captures whatever's on your mind the moment it hits — no format required.</p>
           </div>
-          <div class="feat-card-device">
-            <div class="device-frame device-frame--mini">
-              <div class="device-screen device-screen--mini">
-                <div class="app-body app-body--mini">
-                  <div class="app-header">
-                    <span class="app-title">Today</span>
-                  </div>
-                  <div class="app-tasks">
-                    <div class="task-row task-row--done">
-                      <span class="task-check">✓</span>
-                      <span class="task-name">Morning brief</span>
-                    </div>
-                    <div class="task-row">
-                      <span class="task-check task-check--empty"></span>
-                      <span class="task-name">Write proposal</span>
-                      <span class="task-tag tag--work">Work</span>
-                    </div>
-                    <div class="task-row">
-                      <span class="task-check task-check--empty"></span>
-                      <span class="task-name">Call Jordan</span>
-                      <span class="task-tag tag--personal">Personal</span>
-                    </div>
-                    <div class="task-row task-row--dim">
-                      <span class="task-check task-check--empty"></span>
-                      <span class="task-name">Evening wrap-up</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div class="moment" data-moment="2">
+            <p class="moment-eyebrow">Step 3</p>
+            <h2 class="moment-headline">AI plans<br>the path.</h2>
+            <p class="moment-body">Kinda breaks your task into one clear first step. Starting never feels overwhelming when the AI has already done the thinking.</p>
+          </div>
+          <div class="moment" data-moment="3">
+            <p class="moment-eyebrow">Step 4</p>
+            <h2 class="moment-headline">Keep the<br>momentum.</h2>
+            <p class="moment-body">Check it off and Kinda queues up the next step. Each small win builds toward getting things done — for real this time.</p>
           </div>
         </div>
 
-        <div class="feat-card feat-card--cool">
-          <h3 class="feat-card-title">It notices what<br>you don't say.</h3>
-          <p class="feat-card-body">When you pause, when you push through, when you stop — Kinda reads the signals and adjusts. No check-ins needed.</p>
-        </div>
-
-        <div class="feat-card feat-card--white">
-          <div class="feat-card-copy">
-            <h3 class="feat-card-title feat-card-title--dark">Three questions.<br>Already knows you.</h3>
-            <p class="feat-card-body feat-card-body--dark">A short setup, then a day built specifically for how your brain works. Not a generic checklist anyone could have made.</p>
+        <div class="how-phone">
+          <div class="phone-frame" id="how-phone-frame">
+            <img class="phone-screen" data-moment="0" src="screens/Home with greeting new.png" alt="Kinda home screen" />
+            <img class="phone-screen" data-moment="1" src="screens/Manual Task.png" alt="Add a task" />
+            <img class="phone-screen" data-moment="2" src="screens/AI Suggestion.png" alt="AI task breakdown" />
+            <img class="phone-screen" data-moment="3" src="screens/Subtask End.png" alt="Task complete" />
           </div>
         </div>
 
       </div>
-    </div>
-    <div class="cards-controls">
-      <button class="cards-btn" id="cards-prev" aria-label="Previous">←</button>
-      <button class="cards-btn" id="cards-next" aria-label="Next">→</button>
+
+      <div class="progress-track" id="how-progress" aria-hidden="true">
+        <div class="progress-dot" data-moment="0"></div>
+        <div class="progress-dot" data-moment="1"></div>
+        <div class="progress-dot" data-moment="2"></div>
+        <div class="progress-dot" data-moment="3"></div>
+      </div>
     </div>
   </section>
 
   <!-- WAITLIST -->
   <section class="waitlist" id="waitlist">
+    <div class="waitlist-video-bg" aria-hidden="true">
+      <video autoplay muted loop playsinline preload="auto">
+        <source src="videos/waitlist-breeze.mp4" type="video/mp4" />
+      </video>
+    </div>
     <div class="waitlist-inner">
       <p class="waitlist-eyebrow" data-anime="fade-up" data-anime-delay="0">Early Access</p>
       <h2 class="waitlist-headline" data-anime="fade-up" data-anime-delay="80">Be one of the first.</h2>
@@ -248,6 +178,7 @@
     </div>
   </footer>
 
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
   <script src="main.js"></script>
 </body>
