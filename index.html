@@ -99,38 +99,20 @@
       There are six of them.
     </p>
 
-    <div class="sf-grid">
-
-      <div class="sf-card sf-card--blue">
-        <span class="sf-card__label">Activation failure</span>
-        <p class="sf-card__quote">"I know exactly what I need to do. I just can't make myself start."</p>
+    <div class="carousel-wrap">
+      <div class="carousel-glow" id="carousel-glow"></div>
+      <div class="carousel-stage">
+        <button class="carousel-btn carousel-btn--prev" id="carousel-prev" aria-label="Previous card">
+          <i class="ti ti-arrow-left"></i>
+        </button>
+        <div class="carousel-scene" id="carousel-scene">
+          <div class="carousel-rotor" id="carousel-rotor"></div>
+        </div>
+        <button class="carousel-btn carousel-btn--next" id="carousel-next" aria-label="Next card">
+          <i class="ti ti-arrow-right"></i>
+        </button>
       </div>
-
-      <div class="sf-card sf-card--amber">
-        <span class="sf-card__label">Decision paralysis</span>
-        <p class="sf-card__quote">"I have so many things I could do that I end up doing none of them."</p>
-      </div>
-
-      <div class="sf-card sf-card--green">
-        <span class="sf-card__label">Perfectionism trap</span>
-        <p class="sf-card__quote">"It's not ready yet. It needs to be right before I can send it."</p>
-      </div>
-
-      <div class="sf-card sf-card--purple">
-        <span class="sf-card__label">Momentum dependency</span>
-        <p class="sf-card__quote">"I work well — but only when I'm already in the zone. Getting there is the problem."</p>
-      </div>
-
-      <div class="sf-card sf-card--red">
-        <span class="sf-card__label">Burnout / depletion</span>
-        <p class="sf-card__quote">"I used to be productive. Now even small tasks feel like too much."</p>
-      </div>
-
-      <div class="sf-card sf-card--gray">
-        <span class="sf-card__label">Identity fog</span>
-        <p class="sf-card__quote">"I'm busy all the time but I don't feel like I'm moving toward anything."</p>
-      </div>
-
+      <div class="carousel-pips" id="carousel-pips" role="tablist" aria-label="Failure mode cards"></div>
     </div>
 
     <p class="sf-bridge">

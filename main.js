@@ -253,6 +253,163 @@ function initScrollAnimations() {
   document.querySelectorAll('[data-anime]').forEach(el => observer.observe(el));
 }
 
+// ── 3D Carousel — failure mode cards ─────────────────────
+const carouselCards = [
+  { code: 'ACT', label: 'Activation failure',  color: '#7EC8E3', quote: '"I know exactly what I need to do. I just can\'t make myself start."' },
+  { code: 'DEC', label: 'Decision paralysis',  color: '#F0B429', quote: '"I have so many things I could do that I end up doing none of them."' },
+  { code: 'PER', label: 'Perfectionism trap',  color: '#B0A0E0', quote: '"It\'s not ready yet. It needs to be right before I can send it."' },
+  { code: 'MOM', label: 'Momentum dependency', color: '#7AC8B8', quote: '"I work well — but only when I\'m already in the zone. Getting there is the problem."' },
+  { code: 'BUR', label: 'Burnout / depletion', color: '#E8A598', quote: '"I used to be productive. Now even small tasks feel like too much."' },
+  { code: 'IDN', label: 'Identity fog',        color: '#9DB89A', quote: '"I\'m busy all the time but I don\'t feel like I\'m moving toward anything."' },
+];
+
+function initCarousel() {
+  const rotor   = document.getElementById('carousel-rotor');
+  const scene   = document.getElementById('carousel-scene');
+  const pipsEl  = document.getElementById('carousel-pips');
+  const glowEl  = document.getElementById('carousel-glow');
+  const prevBtn = document.getElementById('carousel-prev');
+  const nextBtn = document.getElementById('carousel-next');
+  if (!rotor) return;
+
+  const N = carouselCards.length;
+  let active = 0;
+  let touchStartX = 0;
+  let mouseStartX = 0;
+  let isDragging  = false;
+
+  // Responsive dimensions
+  function getDims() {
+    const w = window.innerWidth;
+    if (w <= 600) return { radius: 240, perspective: 700 };
+    if (w <= 900) return { radius: 300, perspective: 900 };
+    return                { radius: 380, perspective: 1200 };
+  }
+
+  function hexToRgb(hex) {
+    return [
+      parseInt(hex.slice(1, 3), 16),
+      parseInt(hex.slice(3, 5), 16),
+      parseInt(hex.slice(5, 7), 16),
+    ].join(',');
+  }
+
+  // Build scene perspective
+  function applyDims() {
+    const { perspective } = getDims();
+    scene.style.perspective = perspective + 'px';
+  }
+
+  // Build cards
+  carouselCards.forEach((c, i) => {
+    const card = document.createElement('div');
+    card.className = 'carousel-card';
+    card.dataset.index = i;
+    card.innerHTML = `
+      <div class="card-dot" style="background:${c.color};box-shadow:0 0 16px ${c.color}88"></div>
+      <div class="card-code" style="color:${c.color}">${c.code}</div>
+      <div class="card-label">${c.label}</div>
+      <p class="card-quote">${c.quote}</p>
+    `;
+    rotor.appendChild(card);
+  });
+
+  // Build pips
+  carouselCards.forEach((_, i) => {
+    const pip = document.createElement('button');
+    pip.className = 'carousel-pip';
+    pip.setAttribute('aria-label', `Card ${i + 1}`);
+    pip.setAttribute('role', 'tab');
+    pip.addEventListener('click', () => goTo(i));
+    pipsEl.appendChild(pip);
+  });
+
+  function positionCards() {
+    const { radius } = getDims();
+    rotor.querySelectorAll('.carousel-card').forEach((card, i) => {
+      const angle = i * (360 / N);
+      card.style.transform = `rotateY(${angle}deg) translateZ(${radius}px)`;
+    });
+  }
+
+  function goTo(idx) {
+    active = ((idx % N) + N) % N;
+    rotor.style.transform = `rotateY(${-active * (360 / N)}deg)`;
+
+    rotor.querySelectorAll('.carousel-card').forEach((card, i) => {
+      const dist = Math.min(Math.abs(i - active), N - Math.abs(i - active));
+      const c   = carouselCards[i];
+      const rgb = hexToRgb(c.color);
+
+      if (i === active) {
+        card.style.opacity       = '1';
+        card.style.filter        = 'brightness(1)';
+        card.style.pointerEvents = 'auto';
+        card.style.background    = `rgba(${rgb}, 0.07)`;
+        card.style.borderColor   = `rgba(${rgb}, 0.24)`;
+      } else if (dist === 1) {
+        card.style.opacity       = '0.44';
+        card.style.filter        = 'brightness(0.62)';
+        card.style.pointerEvents = 'none';
+        card.style.background    = 'rgba(255,255,255,0.03)';
+        card.style.borderColor   = 'rgba(255,255,255,0.07)';
+      } else {
+        card.style.opacity       = '0.1';
+        card.style.filter        = 'brightness(0.28)';
+        card.style.pointerEvents = 'none';
+        card.style.background    = 'rgba(255,255,255,0.02)';
+        card.style.borderColor   = 'rgba(255,255,255,0.04)';
+      }
+    });
+
+    pipsEl.querySelectorAll('.carousel-pip').forEach((pip, i) => {
+      const on = i === active;
+      pip.classList.toggle('is-active', on);
+      pip.style.background = on ? carouselCards[i].color : '';
+    });
+
+    const rgb = hexToRgb(carouselCards[active].color);
+    glowEl.style.background =
+      `radial-gradient(ellipse 80% 65% at 50% 50%, rgba(${rgb},0.13), transparent 65%)`;
+  }
+
+  prevBtn.addEventListener('click', () => goTo(active - 1));
+  nextBtn.addEventListener('click', () => goTo(active + 1));
+
+  // Touch swipe
+  scene.addEventListener('touchstart', e => {
+    touchStartX = e.touches[0].clientX;
+  }, { passive: true });
+  scene.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 36) goTo(active + (dx < 0 ? 1 : -1));
+  }, { passive: true });
+
+  // Mouse drag
+  scene.addEventListener('mousedown', e => { mouseStartX = e.clientX; isDragging = true; });
+  scene.addEventListener('mouseup', e => {
+    if (!isDragging) return;
+    isDragging = false;
+    const dx = e.clientX - mouseStartX;
+    if (Math.abs(dx) > 36) goTo(active + (dx < 0 ? 1 : -1));
+  });
+  scene.addEventListener('mouseleave', () => { isDragging = false; });
+
+  // Keyboard
+  document.addEventListener('keydown', e => {
+    const sf = document.getElementById('features');
+    if (!sf) return;
+    const r = sf.getBoundingClientRect();
+    if (r.top > window.innerHeight || r.bottom < 0) return;
+    if (e.key === 'ArrowLeft')  goTo(active - 1);
+    if (e.key === 'ArrowRight') goTo(active + 1);
+  });
+
+  applyDims();
+  positionCards();
+  goTo(0);
+}
+
 // ── Confession Wall ───────────────────────────────────────
 const confessionRows = [
   [
@@ -514,6 +671,7 @@ document.addEventListener('DOMContentLoaded', () => {
   buildTickerRow(confessionRows[0], 'ticker-row-1');
   buildTickerRow(confessionRows[1], 'ticker-row-2');
   buildTickerRow(confessionRows[2], 'ticker-row-3');
+  initCarousel();
   initForm();
   initHowSection();
 
