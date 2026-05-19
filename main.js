@@ -103,7 +103,54 @@ function initMobileNav() {
   menu.querySelectorAll('.scroll-to').forEach(el => el.addEventListener('click', close));
 }
 
-// ── Hero cursor glow + chromatic aberration ───────────────
+// ── Custom cursor (global, pointer-fine only) ─────────────
+function initCustomCursor() {
+  if (!window.matchMedia('(pointer: fine)').matches) return;
+  const ring = document.getElementById('cursor-ring');
+  const dot  = document.getElementById('cursor-dot');
+  if (!ring || !dot) return;
+
+  const RING_HALF = 18, DOT_HALF = 2.5;
+  let mx = 0, my = 0;
+  let rx = 0, ry = 0;
+  let visible = false;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX;
+    my = e.clientY;
+    if (!visible) {
+      visible = true;
+      rx = mx; ry = my;
+      ring.classList.add('is-visible');
+      dot.classList.add('is-visible');
+    }
+  });
+
+  document.addEventListener('mouseleave', () => {
+    ring.classList.remove('is-visible');
+    dot.classList.remove('is-visible');
+    visible = false;
+  });
+
+  document.addEventListener('mousedown', () => ring.classList.add('is-click'));
+  document.addEventListener('mouseup',   () => ring.classList.remove('is-click'));
+
+  // Expand ring over interactive elements
+  document.querySelectorAll('a, button, [role="button"]').forEach(el => {
+    el.addEventListener('mouseenter', () => ring.classList.add('is-hover'));
+    el.addEventListener('mouseleave', () => ring.classList.remove('is-hover'));
+  });
+
+  (function tick() {
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    dot.style.transform  = `translate3d(${mx  - DOT_HALF}px,${my  - DOT_HALF}px,0)`;
+    ring.style.transform = `translate3d(${rx - RING_HALF}px,${ry - RING_HALF}px,0)`;
+    requestAnimationFrame(tick);
+  })();
+}
+
+// ── Hero canvas glow — spring-physics orb ─────────────────
 function initHeroCursorGlow() {
   if (!window.matchMedia('(pointer: fine)').matches) return;
   const hero     = document.getElementById('hero');
@@ -120,67 +167,131 @@ function initHeroCursorGlow() {
   resize();
   window.addEventListener('resize', resize, { passive: true });
 
-  let mx = -2000, my = -2000;
-  let pmx = 0, pmy = 0;
-  let smoothVel = 0;
-  let chromaOffset = 0;
+  // Target cursor position inside hero
+  let tx = -1, ty = -1;
+  let entered = false;
+  // Spring glow position (lerps toward target)
+  let gx, gy;
 
   hero.addEventListener('mousemove', e => {
-    const r = canvas.getBoundingClientRect();
-    mx = e.clientX - r.left;
-    my = e.clientY - r.top;
+    const r = hero.getBoundingClientRect();
+    tx = e.clientX - r.left;
+    ty = e.clientY - r.top;
+    entered = true;
+    if (gx === undefined) { gx = tx; gy = ty; }
   }, { passive: true });
 
-  hero.addEventListener('mouseleave', () => { mx = -2000; my = -2000; }, { passive: true });
+  hero.addEventListener('mouseleave', () => { entered = false; }, { passive: true });
 
-  function draw() {
-    const velX = mx - pmx;
-    const velY = my - pmy;
-    pmx = mx; pmy = my;
-    const vel = Math.sqrt(velX * velX + velY * velY);
-    smoothVel = smoothVel * 0.94 + vel * 0.06;
-    chromaOffset = chromaOffset * 0.92 + Math.min(smoothVel * 0.06, 2) * 0.08;
+  let pmx = 0, pmy = 0, vel = 0, smoothVel = 0, chromaOffset = 0;
+
+  (function draw() {
+    // Init glow position to hero center on first frame
+    if (gx === undefined) { gx = canvas.width * 0.5; gy = canvas.height * 0.42; }
+
+    const targetX = entered ? tx : canvas.width  * 0.5;
+    const targetY = entered ? ty : canvas.height * 0.42;
+    const speed   = entered ? 0.09 : 0.025;
+    gx += (targetX - gx) * speed;
+    gy += (targetY - gy) * speed;
+
+    const velX = gx - pmx;
+    const velY = gy - pmy;
+    pmx = gx; pmy = gy;
+    vel       = Math.sqrt(velX * velX + velY * velY);
+    smoothVel = smoothVel * 0.92 + vel * 0.08;
+    chromaOffset = chromaOffset * 0.90 + Math.min(smoothVel * 0.10, 4) * 0.10;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    if (mx > -1000) {
-      const r  = 280 + smoothVel * 0.5;
-      const ox = (velX / (vel + 0.01)) * smoothVel * 0.4;
+    const W = canvas.width, H = canvas.height;
 
-      // Red glow (leads mouse direction)
-      const gr = ctx.createRadialGradient(mx + ox * 0.4, my, 0, mx + ox * 0.4, my, r);
-      gr.addColorStop(0, `rgba(255,50,80,${0.045 + smoothVel * 0.0008})`);
-      gr.addColorStop(1, 'rgba(255,0,0,0)');
-      ctx.fillStyle = gr;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // 1 — ambient base haze (always present, large + soft)
+    const R0 = Math.min(W, H) * 0.6;
+    const g0 = ctx.createRadialGradient(gx, gy, 0, gx, gy, R0);
+    g0.addColorStop(0,   'rgba(160,200,255,0.055)');
+    g0.addColorStop(0.5, 'rgba(100,140,255,0.022)');
+    g0.addColorStop(1,   'rgba(0,0,0,0)');
+    ctx.fillStyle = g0;
+    ctx.fillRect(0, 0, W, H);
 
-      // Blue glow (trails mouse direction)
-      const gb = ctx.createRadialGradient(mx - ox * 0.4, my, 0, mx - ox * 0.4, my, r);
-      gb.addColorStop(0, `rgba(60,140,255,${0.04 + smoothVel * 0.0006})`);
-      gb.addColorStop(1, 'rgba(0,60,255,0)');
-      ctx.fillStyle = gb;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // 2 — warm core orb (follows cursor tightly)
+    const R1 = 220 + smoothVel * 1.2;
+    const g1 = ctx.createRadialGradient(gx, gy, 0, gx, gy, R1);
+    g1.addColorStop(0,   `rgba(255,245,200,${0.10 + smoothVel * 0.0012})`);
+    g1.addColorStop(0.3, `rgba(255,200,100,${0.045 + smoothVel * 0.0006})`);
+    g1.addColorStop(1,   'rgba(255,160,40,0)');
+    ctx.fillStyle = g1;
+    ctx.fillRect(0, 0, W, H);
 
-      // White core
-      const gw = ctx.createRadialGradient(mx, my, 0, mx, my, r * 0.35);
-      gw.addColorStop(0, `rgba(255,255,255,${0.03 + smoothVel * 0.0005})`);
-      gw.addColorStop(1, 'rgba(255,255,255,0)');
-      ctx.fillStyle = gw;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-    }
+    // 3 — cool blue halo (leads the direction of movement)
+    const ox = velX * 2.8;
+    const oy = velY * 2.8;
+    const R2 = 320 + smoothVel * 0.9;
+    const g2 = ctx.createRadialGradient(gx + ox, gy + oy, 0, gx + ox, gy + oy, R2);
+    g2.addColorStop(0,   `rgba(80,140,255,${0.06 + smoothVel * 0.0008})`);
+    g2.addColorStop(0.5, `rgba(60,100,255,0.025)`);
+    g2.addColorStop(1,   'rgba(40,60,255,0)');
+    ctx.fillStyle = g2;
+    ctx.fillRect(0, 0, W, H);
 
-    // Chromatic aberration on headline text
+    // 4 — amber trail (lags behind, opposite direction)
+    const R3 = 260 + smoothVel * 0.7;
+    const g3 = ctx.createRadialGradient(gx - ox * 0.5, gy - oy * 0.5, 0, gx - ox * 0.5, gy - oy * 0.5, R3);
+    g3.addColorStop(0,   `rgba(255,130,60,${0.05 + smoothVel * 0.0006})`);
+    g3.addColorStop(1,   'rgba(255,80,0,0)');
+    ctx.fillStyle = g3;
+    ctx.fillRect(0, 0, W, H);
+
+    // Chromatic aberration on headline (fast movement only)
     if (headline) {
-      const co = chromaOffset;
-      headline.style.filter = co < 0.2
+      headline.style.filter = chromaOffset < 0.25
         ? ''
-        : `drop-shadow(${co}px 0 rgba(255,40,80,0.30)) drop-shadow(${-co}px 0 rgba(40,180,255,0.30))`;
+        : `drop-shadow(${chromaOffset}px 0 rgba(255,40,80,0.28)) drop-shadow(${-chromaOffset}px 0 rgba(40,180,255,0.28))`;
     }
 
     requestAnimationFrame(draw);
-  }
+  })();
+}
 
-  draw();
+// ── Hero parallax — content vs video depth ─────────────────
+function initHeroParallax() {
+  if (!window.matchMedia('(pointer: fine)').matches) return;
+  const hero     = document.getElementById('hero');
+  const inner    = hero && hero.querySelector('.hero-inner');
+  const videoBg  = hero && hero.querySelector('.hero-video-bg');
+  if (!hero || !inner) return;
+
+  let itx = 0, ity = 0;   // inner target
+  let icx = 0, icy = 0;   // inner current
+  let vtx = 0, vty = 0;   // video target
+  let vcx = 0, vcy = 0;   // video current
+
+  hero.addEventListener('mousemove', e => {
+    const r  = hero.getBoundingClientRect();
+    const px = (e.clientX - r.left) / r.width  - 0.5;   // −0.5 → 0.5
+    const py = (e.clientY - r.top)  / r.height - 0.5;
+    itx =  px * 16;   vty =  py * 12;   // inner follows cursor
+    ity =  py * 10;   vtx =  px * 14;
+    vtx = -px * 22;   // video moves opposite (depth illusion)
+    vty = -py * 16;
+  }, { passive: true });
+
+  hero.addEventListener('mouseleave', () => {
+    itx = ity = vtx = vty = 0;
+  }, { passive: true });
+
+  (function tick() {
+    icx += (itx - icx) * 0.08;
+    icy += (ity - icy) * 0.08;
+    vcx += (vtx - vcx) * 0.05;
+    vcy += (vty - vcy) * 0.05;
+
+    inner.style.transform = `translate3d(${icx}px,${icy}px,0)`;
+    if (videoBg) videoBg.style.transform = `translate3d(${vcx}px,${vcy}px,0) scale(1.06)`;
+
+    requestAnimationFrame(tick);
+  })();
 }
 
 // ── Scroll-triggered animations ───────────────────────────
@@ -266,6 +377,7 @@ const carouselCards = [
 function initCarousel() {
   const rotor   = document.getElementById('carousel-rotor');
   const scene   = document.getElementById('carousel-scene');
+  const stage   = scene && scene.parentElement;
   const pipsEl  = document.getElementById('carousel-pips');
   const glowEl  = document.getElementById('carousel-glow');
   const prevBtn = document.getElementById('carousel-prev');
@@ -278,12 +390,11 @@ function initCarousel() {
   let mouseStartX = 0;
   let isDragging  = false;
 
-  // Responsive dimensions
-  function getDims() {
+  function getCardWidth() {
     const w = window.innerWidth;
-    if (w <= 600) return { radius: 240, perspective: 700 };
-    if (w <= 900) return { radius: 300, perspective: 900 };
-    return                { radius: 380, perspective: 1200 };
+    if (w <= 600) return 280;
+    if (w <= 900) return 340;
+    return 460;
   }
 
   function hexToRgb(hex) {
@@ -294,10 +405,12 @@ function initCarousel() {
     ].join(',');
   }
 
-  // Build scene perspective
-  function applyDims() {
-    const { perspective } = getDims();
-    scene.style.perspective = perspective + 'px';
+  // Circular signed offset: how far card i is from active (-N/2 … N/2)
+  function getOffset(i) {
+    let off = i - active;
+    while (off >  N / 2) off -= N;
+    while (off < -N / 2) off += N;
+    return off;
   }
 
   // Build cards
@@ -306,7 +419,7 @@ function initCarousel() {
     card.className = 'carousel-card';
     card.dataset.index = i;
     card.innerHTML = `
-      <div class="card-dot" style="background:${c.color};box-shadow:0 0 16px ${c.color}88"></div>
+      <div class="card-dot" style="background:${c.color};box-shadow:0 0 16px ${c.color}66"></div>
       <div class="card-code" style="color:${c.color}">${c.code}</div>
       <div class="card-label">${c.label}</div>
       <p class="card-quote">${c.quote}</p>
@@ -324,42 +437,46 @@ function initCarousel() {
     pipsEl.appendChild(pip);
   });
 
-  function positionCards() {
-    const { radius } = getDims();
-    rotor.querySelectorAll('.carousel-card').forEach((card, i) => {
-      const angle = i * (360 / N);
-      card.style.transform = `rotateY(${angle}deg) translateZ(${radius}px)`;
-    });
-  }
-
   function goTo(idx) {
     active = ((idx % N) + N) % N;
-    rotor.style.transform = `rotateY(${-active * (360 / N)}deg)`;
+    const cw = getCardWidth();
 
     rotor.querySelectorAll('.carousel-card').forEach((card, i) => {
-      const dist = Math.min(Math.abs(i - active), N - Math.abs(i - active));
-      const c   = carouselCards[i];
-      const rgb = hexToRgb(c.color);
+      const off = getOffset(i);
+      const abs = Math.abs(off);
+      const sign = off < 0 ? -1 : off > 0 ? 1 : 0;
 
-      if (i === active) {
-        card.style.opacity       = '1';
-        card.style.filter        = 'brightness(1)';
-        card.style.pointerEvents = 'auto';
-        card.style.background    = `rgba(${rgb}, 0.07)`;
-        card.style.borderColor   = `rgba(${rgb}, 0.24)`;
-      } else if (dist === 1) {
-        card.style.opacity       = '0.44';
-        card.style.filter        = 'brightness(0.62)';
-        card.style.pointerEvents = 'none';
-        card.style.background    = 'rgba(255,255,255,0.03)';
-        card.style.borderColor   = 'rgba(255,255,255,0.07)';
+      let tx, ry, tz, rz, scale, opacity, zIndex, bg, border, shadow;
+
+      if (abs === 0) {
+        tx = 0;                   ry =  0;   tz =   0; rz = 1.9; scale = 1;    opacity = 1;    zIndex = 10;
+        bg     = '#0e0f11';
+        border = 'rgba(255,255,255,0.13)';
+        shadow = '0 28px 72px rgba(0,0,0,0.80)';
+      } else if (abs === 1) {
+        tx = sign * cw * 1.08;   ry = sign * 50; tz = -50; rz = 0; scale = 0.88; opacity = 0.75; zIndex = 6;
+        bg     = '#0b0b0e';
+        border = 'rgba(255,255,255,0.07)';
+        shadow = '0 18px 50px rgba(0,0,0,0.65)';
+      } else if (abs === 2) {
+        tx = sign * cw * 1.95;   ry = sign * 65; tz = -120; rz = 0; scale = 0.7; opacity = 0.28; zIndex = 3;
+        bg     = '#090912';
+        border = 'rgba(255,255,255,0.04)';
+        shadow = '0 14px 36px rgba(0,0,0,0.55)';
       } else {
-        card.style.opacity       = '0.1';
-        card.style.filter        = 'brightness(0.28)';
-        card.style.pointerEvents = 'none';
-        card.style.background    = 'rgba(255,255,255,0.02)';
-        card.style.borderColor   = 'rgba(255,255,255,0.04)';
+        tx = sign * cw * 2.6;    ry = sign * 75; tz = -200; rz = 0; scale = 0.5; opacity = 0;    zIndex = 0;
+        bg     = '#080810';
+        border = 'rgba(255,255,255,0.02)';
+        shadow = 'none';
       }
+
+      card.style.transform     = `translateX(${tx}px) rotateY(${ry}deg) translateZ(${tz}px) scale(${scale}) rotateZ(${rz}deg)`;
+      card.style.opacity       = String(opacity);
+      card.style.zIndex        = String(zIndex);
+      card.style.background    = bg;
+      card.style.borderColor   = border;
+      card.style.boxShadow     = shadow;
+      card.style.pointerEvents = abs === 0 ? 'auto' : 'none';
     });
 
     pipsEl.querySelectorAll('.carousel-pip').forEach((pip, i) => {
@@ -370,30 +487,31 @@ function initCarousel() {
 
     const rgb = hexToRgb(carouselCards[active].color);
     glowEl.style.background =
-      `radial-gradient(ellipse 80% 65% at 50% 50%, rgba(${rgb},0.13), transparent 65%)`;
+      `radial-gradient(ellipse 72% 60% at 50% 50%, rgba(${rgb},0.16), transparent 62%)`;
   }
 
   prevBtn.addEventListener('click', () => goTo(active - 1));
   nextBtn.addEventListener('click', () => goTo(active + 1));
 
-  // Touch swipe
-  scene.addEventListener('touchstart', e => {
+  // Touch — listen on the full stage so side cards are swipeable
+  const dragTarget = stage || scene;
+  dragTarget.addEventListener('touchstart', e => {
     touchStartX = e.touches[0].clientX;
   }, { passive: true });
-  scene.addEventListener('touchend', e => {
+  dragTarget.addEventListener('touchend', e => {
     const dx = e.changedTouches[0].clientX - touchStartX;
     if (Math.abs(dx) > 36) goTo(active + (dx < 0 ? 1 : -1));
   }, { passive: true });
 
   // Mouse drag
-  scene.addEventListener('mousedown', e => { mouseStartX = e.clientX; isDragging = true; });
-  scene.addEventListener('mouseup', e => {
+  dragTarget.addEventListener('mousedown', e => { mouseStartX = e.clientX; isDragging = true; });
+  dragTarget.addEventListener('mouseup', e => {
     if (!isDragging) return;
     isDragging = false;
     const dx = e.clientX - mouseStartX;
     if (Math.abs(dx) > 36) goTo(active + (dx < 0 ? 1 : -1));
   });
-  scene.addEventListener('mouseleave', () => { isDragging = false; });
+  dragTarget.addEventListener('mouseleave', () => { isDragging = false; });
 
   // Keyboard
   document.addEventListener('keydown', e => {
@@ -405,8 +523,9 @@ function initCarousel() {
     if (e.key === 'ArrowRight') goTo(active + 1);
   });
 
-  applyDims();
-  positionCards();
+  // Reposition on resize
+  window.addEventListener('resize', () => goTo(active));
+
   goTo(0);
 }
 
@@ -493,9 +612,74 @@ function initHeroVideos() {
   vids[0].play().catch(() => {});
 }
 
-// ── Waitlist form ─────────────────────────────────────────
+// ── Waitlist — Supabase + Resend ─────────────────────────
+class DuplicateError extends Error {
+  constructor() { super('duplicate'); this.name = 'DuplicateError'; }
+}
+
+async function insertWaitlistEntry(name, email) {
+  const res = await fetch('https://uxgxlpvtkwopiytjvomi.supabase.co/rest/v1/waitlist', {
+    method: 'POST',
+    headers: {
+      'Content-Type':  'application/json',
+      'apikey':        window.__KINDA_SUPABASE_KEY__,
+      'Authorization': `Bearer ${window.__KINDA_SUPABASE_KEY__}`,
+      'Prefer':        'return=minimal',
+    },
+    body: JSON.stringify({ name, email, joined_at: new Date().toISOString() }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    if (err.code === '23505') throw new DuplicateError();
+    throw new Error(`Supabase error ${res.status}`);
+  }
+}
+
+async function sendConfirmationEmail(name, email) {
+  const res = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      'Content-Type':  'application/json',
+      'Authorization': `Bearer ${window.__KINDA_RESEND_KEY__}`,
+    },
+    body: JSON.stringify({
+      from:    'Kinda <hello@kinda-app.com>',
+      to:      [email],
+      subject: "You're on the Kinda waitlist",
+      html: `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<style>
+body{margin:0;padding:0;background:#0D2535;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif}
+.wrap{max-width:520px;margin:0 auto;padding:48px 32px}
+.logo{font-size:22px;font-weight:700;color:#ffffff;letter-spacing:-0.02em;margin-bottom:40px}
+.pill{display:inline-block;background:rgba(126,200,227,0.12);color:#7EC8E3;font-size:12px;letter-spacing:0.08em;padding:6px 14px;border-radius:20px;margin-bottom:24px}
+.headline{font-size:28px;font-weight:600;color:#ffffff;line-height:1.2;margin:0 0 16px}
+.body{font-size:15px;color:rgba(255,255,255,0.62);line-height:1.7;margin:0 0 32px}
+.divider{border:none;border-top:1px solid rgba(255,255,255,0.08);margin:32px 0}
+.footer{font-size:12px;color:rgba(255,255,255,0.25);line-height:1.6}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logo">Kinda</div>
+  <p class="pill">Founding member</p>
+  <h1 class="headline">Hey ${name}, you're in.</h1>
+  <p class="body">You're on the Kinda waitlist. We're building something that actually works with how your mind works — not against it.<br><br>We'll reach out personally when your spot is ready. No noise, no newsletters. Just a message when it's time.</p>
+  <hr class="divider"/>
+  <p class="footer">Kinda · kinda-app.com<br>You're receiving this because you joined the waitlist at kinda-app.com.</p>
+</div>
+</body>
+</html>`,
+    }),
+  });
+  if (!res.ok) console.warn('Resend failed:', await res.text().catch(() => ''));
+}
+
 function initForm() {
-  const form      = document.getElementById('waitlist-form');
+  const form       = document.getElementById('waitlist-form');
   if (!form) return;
 
   const nameInput  = document.getElementById('name');
@@ -531,14 +715,21 @@ function initForm() {
     submitBtn.disabled = true;
 
     try {
-      const body = new FormData(form);
-      await fetch('/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams(body).toString() });
-    } catch (_) {}
-
-    formWrap.style.display = 'none';
-    confirm.classList.add('visible');
-    submitBtn.classList.remove('loading');
-    submitBtn.disabled = false;
+      await insertWaitlistEntry(nameVal, emailVal);
+      await sendConfirmationEmail(nameVal, emailVal);
+      formWrap.style.display = 'none';
+      confirm.classList.add('visible');
+    } catch (err) {
+      if (err instanceof DuplicateError) {
+        showError(emailError, emailInput, "You're already on the list — we'll be in touch.");
+      } else {
+        showError(emailError, emailInput, 'Something went wrong. Please try again.');
+        console.error('Waitlist error:', err);
+      }
+    } finally {
+      submitBtn.classList.remove('loading');
+      submitBtn.disabled = false;
+    }
   });
 }
 
@@ -666,7 +857,9 @@ document.addEventListener('DOMContentLoaded', () => {
   initMobileNav();
   initHeroVideos();
   initHeroAnimation();
+  initCustomCursor();
   initHeroCursorGlow();
+  initHeroParallax();
   initScrollAnimations();
   buildTickerRow(confessionRows[0], 'ticker-row-1');
   buildTickerRow(confessionRows[1], 'ticker-row-2');
