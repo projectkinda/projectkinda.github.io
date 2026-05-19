@@ -612,72 +612,7 @@ function initHeroVideos() {
   vids[0].play().catch(() => {});
 }
 
-// ── Waitlist — Supabase + Resend ─────────────────────────
-class DuplicateError extends Error {
-  constructor() { super('duplicate'); this.name = 'DuplicateError'; }
-}
-
-async function insertWaitlistEntry(name, email) {
-  const res = await fetch('https://uxgxlpvtkwopiytjvomi.supabase.co/rest/v1/waitlist', {
-    method: 'POST',
-    headers: {
-      'Content-Type':  'application/json',
-      'apikey':        window.__KINDA_SUPABASE_KEY__,
-      'Authorization': `Bearer ${window.__KINDA_SUPABASE_KEY__}`,
-      'Prefer':        'return=minimal',
-    },
-    body: JSON.stringify({ name, email, joined_at: new Date().toISOString() }),
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    if (err.code === '23505') throw new DuplicateError();
-    throw new Error(`Supabase error ${res.status}`);
-  }
-}
-
-async function sendConfirmationEmail(name, email) {
-  const res = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      'Content-Type':  'application/json',
-      'Authorization': `Bearer ${window.__KINDA_RESEND_KEY__}`,
-    },
-    body: JSON.stringify({
-      from:    'Kinda <hello@kinda-app.com>',
-      to:      [email],
-      subject: "You're on the Kinda waitlist",
-      html: `<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<style>
-body{margin:0;padding:0;background:#0D2535;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif}
-.wrap{max-width:520px;margin:0 auto;padding:48px 32px}
-.logo{font-size:22px;font-weight:700;color:#ffffff;letter-spacing:-0.02em;margin-bottom:40px}
-.pill{display:inline-block;background:rgba(126,200,227,0.12);color:#7EC8E3;font-size:12px;letter-spacing:0.08em;padding:6px 14px;border-radius:20px;margin-bottom:24px}
-.headline{font-size:28px;font-weight:600;color:#ffffff;line-height:1.2;margin:0 0 16px}
-.body{font-size:15px;color:rgba(255,255,255,0.62);line-height:1.7;margin:0 0 32px}
-.divider{border:none;border-top:1px solid rgba(255,255,255,0.08);margin:32px 0}
-.footer{font-size:12px;color:rgba(255,255,255,0.25);line-height:1.6}
-</style>
-</head>
-<body>
-<div class="wrap">
-  <div class="logo">Kinda</div>
-  <p class="pill">Founding member</p>
-  <h1 class="headline">Hey ${name}, you're in.</h1>
-  <p class="body">You're on the Kinda waitlist. We're building something that actually works with how your mind works — not against it.<br><br>We'll reach out personally when your spot is ready. No noise, no newsletters. Just a message when it's time.</p>
-  <hr class="divider"/>
-  <p class="footer">Kinda · kinda-app.com<br>You're receiving this because you joined the waitlist at kinda-app.com.</p>
-</div>
-</body>
-</html>`,
-    }),
-  });
-  if (!res.ok) console.warn('Resend failed:', await res.text().catch(() => ''));
-}
-
+// ── Waitlist form ─────────────────────────────────────────
 function initForm() {
   const form       = document.getElementById('waitlist-form');
   if (!form) return;
@@ -689,6 +624,8 @@ function initForm() {
   const submitBtn  = document.getElementById('submit-btn');
   const formWrap   = document.getElementById('form-wrap');
   const confirm    = document.getElementById('confirm');
+
+  const WORKER_URL = 'https://kinda-waitlist.project-mvp-bluepill.workers.dev';
 
   const showError  = (err, inp, msg) => { err.textContent = msg; err.classList.add('visible'); inp.classList.add('error'); };
   const clearError = (err, inp)      => { err.textContent = '';  err.classList.remove('visible'); inp.classList.remove('error'); };
@@ -715,17 +652,23 @@ function initForm() {
     submitBtn.disabled = true;
 
     try {
-      await insertWaitlistEntry(nameVal, emailVal);
-      await sendConfirmationEmail(nameVal, emailVal);
-      formWrap.style.display = 'none';
-      confirm.classList.add('visible');
-    } catch (err) {
-      if (err instanceof DuplicateError) {
+      const res  = await fetch(WORKER_URL, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ name: nameVal, email: emailVal }),
+      });
+      const data = await res.json();
+
+      if (res.status === 409 || data.error === 'duplicate') {
         showError(emailError, emailInput, "You're already on the list — we'll be in touch.");
-      } else {
+      } else if (!res.ok) {
         showError(emailError, emailInput, 'Something went wrong. Please try again.');
-        console.error('Waitlist error:', err);
+      } else {
+        formWrap.style.display = 'none';
+        confirm.classList.add('visible');
       }
+    } catch {
+      showError(emailError, emailInput, 'Something went wrong. Please try again.');
     } finally {
       submitBtn.classList.remove('loading');
       submitBtn.disabled = false;
